@@ -1,0 +1,4 @@
+@import '../../assets/global/globalStyle.less';
+#page_1 {
+
+}

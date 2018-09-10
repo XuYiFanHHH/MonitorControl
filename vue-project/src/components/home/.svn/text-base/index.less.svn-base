@@ -1,0 +1,27 @@
+@import '../../assets/global/globalStyle.less';
+#home {
+	.body-hidden;
+ 	height: 100vh;
+ 	min-width: @min_width;
+ 	.el-aside {
+ 		width: 200px !important;
+ 	}
+	.el-main {
+		padding: 1rem 0 0 0;
+		background: #fff;
+		overflow: hidden;
+		min-width: @min_width;
+		#routerInner {
+			padding: 0 1rem 1rem 1rem;
+			height: 96vh;
+			overflow-y: auto;
+			.scroll-style;
+		}
+	}
+	.el-header, .el-footer {
+    	background-color: #B3C0D1;
+    	color: #333;
+    	text-align: center;
+    	line-height: 60px;
+  }
+}

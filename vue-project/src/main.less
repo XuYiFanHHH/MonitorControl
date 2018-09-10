@@ -1,0 +1,27 @@
+@import './assets/global/globalStyle.less';
+* {
+	margin: 0;
+	padding: 0;
+}
+
+html,body {
+	.body-hidden;
+	.scroll-style;
+}
+
+#app {
+	.body-hidden;
+	#pageLoading {
+		position: fixed;
+		top: 50vh;
+		left: 50vw;
+		display: none;
+		font-size: 3em;
+		z-index: 100000000;
+		color: @waring-color;
+	}
+}
+
+[v-cloak] {
+	display: none;
+}

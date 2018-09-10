@@ -1,0 +1,101 @@
+/* PC端页面尺寸 */
+@min_width: 1024px;
+@min_height: 768px;
+
+/* 字体 */
+@font-size: 14px;
+@font-family: 'Times New Roman', SimHei;
+
+/* 主色 */
+@primary-color: #72afff; /* 蓝色 */
+
+/* 辅助色 */
+@waring-color: #f98508; /* 橙色 */
+@success-color: #26b44b; /* 绿色 */
+@danger-color: #ff000c; /* 红色 */
+@info-color: #909399; /* 灰色 */
+
+/* 中性色【灰度：1（最深）→8（最浅）】 */
+@grayScale-color_1: #303133;
+@grayScale-color_2: #606266;
+@grayScale-color_3: #909399;
+@grayScale-color_4: #C0C4CC;
+@grayScale-color_5: #DCDFE6;
+@grayScale-color_6: #E4E7ED;
+@grayScale-color_7: #EBEEF5;
+@grayScale-color_8: #F2F6FC;
+
+/* 淡蓝色 */
+@light_blue: #f1f7fd;
+
+/* 淡灰色 */
+@light_grey: #F5F5F7;
+
+/* 蓝色渐变 */
+.blue-linear {
+  background: linear-gradient(to bottom, #00BFFF, #0080FF);
+}
+
+/* 超出显示省略号 */
+.beyond-scope {
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap;
+}
+
+/* 滚动条样式 */
+.scroll-style {
+  &::-webkit-scrollbar {
+    width: 1rem;
+    height: 1rem;
+    background: none;
+  }
+  &::-webkit-scrollbar-track {
+    background: none;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 1rem;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+  scrollbar-track-color: rgba(255, 255, 255, 0);
+  scrollbar-arrow-color: rgba(185, 191, 203, 0.3);
+  scrollbar-3dlight-color: rgba(255, 255, 255, 0);
+  scrollbar-shadow-color: rgba(255, 255, 255, 0);
+  scrollbar-dark-shadow-color: rgba(255, 255, 255, 0);
+  scrollbar-highlight-color: rgba(255, 255, 255, 0);
+  scrollbar-face-color: rgba(185, 191, 203, 0.3);
+}
+
+/* 表格样式 */
+.table_head {
+  padding: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  background: @primary-color;
+  p {
+    margin: 0;
+    padding: 0 5px;
+  }
+}
+
+/* 页面整体 */
+.body-auto {
+  .scroll-style;
+	width: 100vw;
+	height: 100vh;
+	overflow-y: auto;
+	font-size: @font-size;
+  min-width: @min_width;
+  /* min-height: @min_height; */
+	font-family: @font-family;
+	background: @grayScale-color_7;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.body-hidden {
+	.body-auto;
+  overflow-y: hidden;
+}
