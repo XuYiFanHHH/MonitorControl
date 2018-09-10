@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import home from '@/components/home/index.vue'
-import sysuser_page from '@/components/sysuser_page/index.vue'
 import login from '@/components/login/index.vue'
 import user_page from '@/components/user_page/index.vue'
 
@@ -20,10 +19,6 @@ export default new Router({
       name: 'home',
       component: resolve => require(['@/components/home/index.vue'],resolve),
       children: [{
-        path: '/sysuser_page',
-        name: 'sysuser_page',
-        component: sysuser_page // 管理员页面
-      },{
         path: '/login',
         name: 'login',
         component: login // 登录页面

@@ -16,7 +16,7 @@ export default {
           partnum: this.activeItem
         }
       })
-      globalData.is_systemUser = false
+      globalData.user_logined = false
     }
   },
   watch: {

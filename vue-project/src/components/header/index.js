@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     clicklogin(){
-      if(globalData.is_systemUser)
+      if(globalData.user_logined)
       {
         this.$message({
           type: 'info',
@@ -29,9 +29,9 @@ export default {
       }
     },
     click_logout(){
-      if(globalData.is_systemUser)
+      if(globalData.user_logined)
       {
-        globalData.is_systemUser = false
+        globalData.user_logined = false
         this.$message({
           type: 'info',
           message: '退出登录成功'

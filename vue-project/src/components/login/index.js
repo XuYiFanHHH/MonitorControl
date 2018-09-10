@@ -6,8 +6,7 @@ export default {
   
   data () {
     return {
-        activeName: "systemUser",
-        logining : false,
+        activeName: "user",
         account : {
             username:'',
             password:'',
@@ -17,13 +16,13 @@ export default {
   created() {
   },
   methods: {
-    sysUserLogin(){
+    userLogin(){
       if(this.account.username == "admin" && this.account.password == "pass")
       {
-        globalData.is_systemUser = true  
+        globalData.user_logined = true  
         this.$router.push({
-          name: 'sysuser_page',
-          path:'/sysuser_page',
+          name: 'user_page',
+          path:'/user_page',
           query: {
           }
         })   
