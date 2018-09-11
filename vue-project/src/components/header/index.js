@@ -11,7 +11,8 @@ export default {
   },
   methods: {
     clicklogin(){
-      if(globalData.user_logined)
+      let location = window.document.cookie.indexOf('username')
+      if(location != -1)
       {
         this.$message({
           type: 'info',
@@ -28,20 +29,31 @@ export default {
         })
       }
     },
-    click_logout(){
-      if(globalData.user_logined)
+    clicklogout(){
+      let location = window.document.cookie.indexOf('username')
+      if(location != -1)
       {
-        globalData.user_logined = false
-        this.$message({
-          type: 'info',
-          message: '退出登录成功'
-        }); 
-        this.$router.push({
-          name: 'user_page',
-          path:'/user_page',
-          query: {
+        this.axios({
+          method: 'post',
+          url: '/controller/logout',
+          data: {
           }
         })
+        .then((res) => {
+          this.$message({
+            type: 'success',
+            message: '退出登录成功'
+          });
+          this.$router.push({
+            name: 'login',
+            path:'/login',
+            query: {
+            }
+          })
+        })
+        .catch(err => {
+          console.log(err);
+        });
       }
       else
       {

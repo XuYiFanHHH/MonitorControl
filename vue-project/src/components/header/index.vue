@@ -9,7 +9,7 @@
     <el-col class="right_header" :span="4">
       <el-row>
         <el-button type="primary" @click="clicklogin">登录</el-button>
-        <el-button type="success" @click="click_logout">注销</el-button>
+        <el-button type="success" @click="clicklogout">注销</el-button>
       </el-row>
     </el-col>
   </el-row>

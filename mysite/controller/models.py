@@ -3,7 +3,8 @@ from django.db import models
 # Create your models here.
 # 普通用户
 class UserInfo(models.Model):
-    userName = models.CharField(max_length=20)
-    passWord = models.CharField(max_length = 20)
+    username = models.CharField(max_length=20)
+    password = models.CharField(max_length = 20)
+    objects = models.Manager()
     def __str__(self):
-        return self.userName
+        return self.username

@@ -16,24 +16,41 @@ export default {
   created() {
   },
   methods: {
+    // 登录函数
     userLogin(){
-      if(this.account.username == "admin" && this.account.password == "pass")
-      {
-        globalData.user_logined = true  
-        this.$router.push({
-          name: 'user_page',
-          path:'/user_page',
-          query: {
-          }
-        })   
-      }
-      else
-      {
-        this.$message({
-          type: 'warning',
-          message: '账号密码错误'
-        });
-      }
+      this.axios({
+        method: 'post',
+        url: '/controller/login',
+        data: {
+          username: this.account.username,
+          password: this.account.password,
+        }
+      })
+      .then((res) => {
+        if(res.data['error_num'] === 0)
+        {
+          this.$message({
+            type: 'success',
+            message: '登录成功'
+          });
+          this.$router.push({
+            name: 'user_page',
+            path:'/user_page',
+            query: {
+            }
+          })
+        }
+        else
+        {
+          this.$message({
+            type: 'info',
+            message: res.data['msg']
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
     }
   }
 }
