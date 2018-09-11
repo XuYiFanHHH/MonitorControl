@@ -3,6 +3,9 @@
     <el-row>
 			<el-button type="primary" @click="changePwdDialogVisible = true">修改密码</el-button>
 		</el-row>
+    <el-row id="user_page" style="height: 100%">
+      <img alt src='http://127.0.0.1:8000/controller/send_image/'>
+	  </el-row>
     <el-dialog
 				title="修改密码"
 				:visible.sync="changePwdDialogVisible"

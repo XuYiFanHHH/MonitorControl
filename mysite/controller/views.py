@@ -1,10 +1,14 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods
 from django.core import serializers
 import requests
 import json
 import math
-
+import time
+# import  numpy as np
+import  cv2
+# from . import camera
+from .camera import VideoCamera
 from .models import UserInfo
 # Create your views here.
 
@@ -111,3 +115,19 @@ def changePwd(request):
         response['error_num'] = 100
         response = JsonResponse(response)
     return response
+
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        # print(frame.decode("UTF8"))
+        # time.sleep(1)
+        # yield('data:image/jpeg;base64,%s' % frame.decode())
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+
+
+def send_image(request):
+    # camera = VideoCamera()
+    # # m_camera = camera.VideoCamera()
+    # frame = camera.get_frame()
+    # data = 'data:image/jpeg;base64,%s' % frame.decode()
+    return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
