@@ -79,3 +79,35 @@ def logout(request):
         response['error_num'] = 1
         response = JsonResponse(response)
     return response
+
+@require_http_methods(["POST"])
+def changePwd(request):
+    response = {}    
+    if 'username' in request.COOKIES.keys():
+        try:
+            username = request.POST['username']
+            password = request.POST['password']
+            newPassWord = request.POST['newPassWord']
+            objectList = list(UserInfo.objects.filter(username = username).values())
+            if request.COOKIES['username'] == username and len(objectList) > 0 and objectList[0]['password'] == password:
+                print("该用户已存在")
+                obj = UserInfo.objects.get(username= username)
+                obj.password = newPassWord
+                obj.save()
+                response['msg'] = "success"
+                response['error_num'] = 0
+                response = JsonResponse(response)
+            else:
+                print("该用户未存在")
+                response['msg'] = "username or password error or this user doesn't exist"
+                response['error_num'] = 1
+                response = JsonResponse(response)
+        except  Exception as e:
+            response['msg'] = str(e)
+            response['error_num'] = 1
+            response = JsonResponse(response)
+    else:
+        response['msg'] = 'you have not login'
+        response['error_num'] = 100
+        response = JsonResponse(response)
+    return response
