@@ -5,11 +5,12 @@ import requests
 import json
 import math
 import time
-# import  numpy as np
-import  cv2
-# from . import camera
-from .camera import VideoCamera
+import  numpy as np
+import  cv2 as cv
+from .opencv_utils import capture_pic, VideoCamera
+from PIL import Image
 from .models import UserInfo
+from .detector import yolo
 # Create your views here.
 
 @require_http_methods(["POST"])
@@ -116,18 +117,19 @@ def changePwd(request):
         response = JsonResponse(response)
     return response
 
+
 def gen(camera):
     while True:
-        frame = camera.get_frame()
-        # print(frame.decode("UTF8"))
-        # time.sleep(1)
-        # yield('data:image/jpeg;base64,%s' % frame.decode())
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+        image = camera.get_array_frame()
+        image = Image.fromarray(image)
+
+        im = yolo.detect_image(image)
+        im = np.array(im)
+        ret, jpeg = cv.imencode('.jpg', im)
+        frame = jpeg.tobytes()
+        yield (b'--frame\r\n'
+                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
 def send_image(request):
-    # camera = VideoCamera()
-    # # m_camera = camera.VideoCamera()
-    # frame = camera.get_frame()
-    # data = 'data:image/jpeg;base64,%s' % frame.decode()
     return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
