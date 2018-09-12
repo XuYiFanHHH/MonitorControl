@@ -4,6 +4,7 @@ from yolov3.yolo import YOLO
 # __all__ = ["cal1"]
 
 yolo = None
+isBegin = True
 
 # class _Calculate(object):
 #     def __init__(self): pass

@@ -10,7 +10,8 @@ import  cv2 as cv
 from .opencv_utils import capture_pic, VideoCamera
 from PIL import Image
 from .models import UserInfo
-from .detector import yolo
+from .detector import yolo, isBegin
+
 # Create your views here.
 
 @require_http_methods(["POST"])
@@ -28,6 +29,8 @@ def login(request):
             password = request.POST['password']
             objectList = list(UserInfo.objects.filter(username = username).values())
             if len(objectList) > 0 and objectList[0]['password'] == password:
+                global isBegin
+                isBegin = True
                 response['msg'] = "success"
                 response['error_num'] = 0
                 response = JsonResponse(response)
@@ -75,6 +78,9 @@ def logout(request):
     response = {}    
     # 已经登录
     if 'username' in request.COOKIES.keys():
+        global isBegin
+        isBegin = False
+        print(isBegin)
         response['msg'] = "success"
         response['error_num'] = 0
         response = JsonResponse(response)
@@ -119,7 +125,11 @@ def changePwd(request):
 
 
 def gen(camera):
+    global isBegin
     while True:
+        # print(isBegin)
+        if not isBegin:
+            break
         image = camera.get_array_frame()
         image = Image.fromarray(image)
 
