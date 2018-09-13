@@ -26,7 +26,7 @@
       </el-row>
     </el-form>
     <el-row id="user_page" style="height: 100%">
-      <img alt src='http://127.0.0.1:8000/controller/send_image/'>
+      <img alt :src=srcUrl>
 	  </el-row>
     <el-dialog
 				title="修改密码"

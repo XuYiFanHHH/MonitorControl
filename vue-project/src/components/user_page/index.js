@@ -10,6 +10,7 @@ export default {
       changePwdDialogVisible: false,
       websock: null,
       state: null,
+      srcUrl: 'http://127.0.0.1:8000/controller/send_image/',
       account:{
         username: null,
         password: null,
@@ -19,6 +20,7 @@ export default {
   },
   created() {
     this.long_polling()
+    this.$root.reload()
     // this.axios({
     //   method: 'post',
     //   url: '/controller/websocket',
@@ -77,7 +79,6 @@ export default {
     // },
 
     long_polling() {
-      console.log("hahaha")
       let self = this
       var getting = {
 
