@@ -133,7 +133,9 @@ def gen(camera):
         image = camera.get_array_frame()
         image = Image.fromarray(image)
 
-        im = yolo.detect_image(image)
+        im, labels, locations = yolo.detect_image(image)
+        print(labels)
+        print(locations)
         im = np.array(im)
         ret, jpeg = cv.imencode('.jpg', im)
         frame = jpeg.tobytes()
