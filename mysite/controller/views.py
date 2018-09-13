@@ -153,12 +153,12 @@ def recognizeFace(targetImg):
     end = timer()
     print("facerec time:", end - start)             
     print('person match', name)
-    # 检测结果中有已知的人
-    # if name != 'Unknown':
-    #     warningtype = 'found person of warning list'
-    #     warningcontent = name + "appeared"
-    #     warning = WarningHistory(warningtype = warningtype, warningcontent = warningcontent)
-    #     warning.save()
+    #检测结果中有已知的人
+    if name != 'Unknown':
+        warningtype = 'found person of warning list'
+        warningcontent = name + " appeared"
+        warning = WarningHistory(warningtype = warningtype, warningcontent = warningcontent)
+        warning.save()
 
 
 def gen(camera):  
@@ -187,6 +187,8 @@ def gen(camera):
 
 
 def send_image(request):
+    global isBegin
+    isBegin = True
     return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
 
 @require_http_methods(["POST"])
