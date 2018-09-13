@@ -78,6 +78,7 @@ export default {
 
     long_polling() {
       console.log("hahaha")
+      let self = this
       var getting = {
 
         url:'http://127.0.0.1:8000/controller/long_polling',
@@ -87,6 +88,16 @@ export default {
         success:function(res) {
 
          console.log(res);
+
+         for(let item of res['Type']){
+          self.$notify({
+            title: '警告',
+            message: item,
+            type: 'warning'
+          });
+         }
+         
+
 
          $.ajax(getting); //关键在这里，回调函数内再次请求Ajax
 

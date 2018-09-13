@@ -7,7 +7,7 @@ import  cv2 as cv
 from .opencv_utils import capture_pic, VideoCamera
 from PIL import Image
 from .models import UserInfo, WarningHistory
-from .detector import yolo, isBegin, known_face_encodings, known_face_names,isWarning, left, top ,right, bottom
+from .detector import yolo, isBegin, known_face_encodings, known_face_names, terroristWarning, forbiddenAreaWarning, left, top ,right, bottom, terroristName, last_facerec_time
 import face_recognition
 import os
 from timeit import default_timer as timer
@@ -83,13 +83,34 @@ def state_gen():
 
 
 def long_polling(request):
-    global isWarning
-    isWarning = False
-    data = {"isWaring": "True"}
+    global forbiddenAreaWarning, data, terroristWarning, terroristName
+    forbiddenAreaWarning = False
+    terroristWarning = False
+    terroristName = []
     while True:
-        if isWarning == True:
-            isWarning = False
-            return JsonResponse(data)
+        if terroristWarning == True and forbiddenAreaWarning == False:
+            terroristWarning = False
+            nameList = ''
+            for name in terroristName:
+                nameList = nameList + ' ' + name
+            temp = []
+            temp.append(nameList + ' appeared')
+            return JsonResponse({'Type': temp})
+        elif terroristWarning == False and forbiddenAreaWarning == True:
+            forbiddenAreaWarning = False
+            temp = ['person appeared in forbidden area']
+            return JsonResponse({'Type': temp})
+        elif terroristWarning == True and forbiddenAreaWarning == True:
+            terroristWarning = False
+            forbiddenAreaWarning = False
+            terroristWarning = False
+            nameList = ''
+            for name in terroristName:
+                nameList = nameList + ' ' + name
+            temp=[]
+            temp.append(nameList+' appeared')
+            temp.append('persion appeared in forbidden area')
+            return JsonResponse({"Type":temp})
         else:
             time.sleep(1)
 
@@ -157,7 +178,7 @@ def changePwd(request):
 # 识别人脸
 def recognizeFace(targetImg):
     global known_face_names
-    global known_face_encodings
+    global known_face_encodings, terroristWarning, terroristName
     # 初始化已知人脸
     if known_face_names is None:       
         with open("face_encodings.pickle","rb") as f:
@@ -178,14 +199,17 @@ def recognizeFace(targetImg):
         # If a match was found in known_face_encodings, just use the first one.
         if True in matches:
             first_match_index = matches.index(True)
-            name = known_face_names[first_match_index]  
+            name = known_face_names[first_match_index]
     end = timer()
     print("facerec time:", end - start)             
-    print('person match', name)
+    print('person match', terroristName)
     #检测结果中有已知的人
     if name != 'Unknown':
         warningtype = 'found person of warning list'
         warningcontent = name + " appeared"
+        if name not in terroristName:
+            terroristName.append(name)
+        terroristWarning = True
         warning = WarningHistory(warningtype = warningtype, warningcontent = warningcontent)
         warning.save()
 
@@ -201,10 +225,10 @@ def isIntersect(x01, x02, y01, y02, x11, x12, y11, y12):
 
 
 def gen(camera):
-    global isBegin, left, top, right, bottom, isWarning
+    global isBegin, left, top, right, bottom, forbiddenAreaWarning, last_facerec_time
     while True:
         start = timer()
-        global isBegin
+        global isBegin, data
         if not isBegin:
             break
         image = camera.get_array_frame()
@@ -214,14 +238,22 @@ def gen(camera):
         # 若有人脸，截取出来进行检测
         if len(locations) > 0:
             for location in locations:
-                isWarning = isIntersect(int(left), int(right), int(top), int(bottom), location[0], location[2],
+                forbiddenAreaWarning = isIntersect(int(left), int(right), int(top), int(bottom), location[0], location[2],
                                         location[1], location[3])
+                if forbiddenAreaWarning == True:
+                    warningtype = 'person in forbidden area'
+                    warningcontent = 'person appeared in forbidden area'
+                    warning = WarningHistory(warningtype=warningtype, warningcontent=warningcontent)
+                    warning.save()
+                    data = 'person appeared in forbidden area'
                 print(labels)
                 print(locations)
                 # recognizeFace(image.crop(location))
-                t =threading.Thread(target=recognizeFace,args=(image.crop(location),))
-                # t.setDaemon(True)#设置线程为后台线程
-                t.start()
+                thisTime = timer()
+                if (thisTime - last_facerec_time) >= 2:
+                    t =threading.Thread(target=recognizeFace,args=(image.crop(location),))
+                    t.start()
+                    last_facerec_time = thisTime
         # 生成器产生带框图片返回给前端
         im = im.resize((640,480))
         im = np.array(im)
@@ -234,8 +266,9 @@ def gen(camera):
 
 
 def send_image(request):
-    global isBegin
+    global isBegin, last_facerec_time
     isBegin = True
+    last_facerec_time = timer()
     return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
 
 @require_http_methods(["POST"])

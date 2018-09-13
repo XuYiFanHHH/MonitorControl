@@ -6,11 +6,16 @@ known_face_names = None
 
 yolo = None
 isBegin = True
-isWarning = False
+forbiddenAreaWarning = False
+terroristWarning = False
 left = 0
 top = 0
 right = 0
 bottom = 0
+terroristName = []
+
+last_facerec_time = 0
+
 
 if yolo is None:
     yolo = YOLO()
