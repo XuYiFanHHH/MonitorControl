@@ -258,9 +258,13 @@ def gen():
 
 
 def send_image(request):
-    global isBegin, last_facerec_time
+    global isBegin, last_facerec_time, left, top, right, bottom
     isBegin = True
     last_facerec_time = timer()
+    left = 0
+    top = 0
+    right = 0
+    bottom = 0
     return StreamingHttpResponse(gen(), content_type='multipart/x-mixed-replace; boundary=frame')
 
 @require_http_methods(["POST"])
