@@ -1,5 +1,5 @@
 // import editDialog from "../Dialog/index.vue"
-
+import globalData from "../../assets/global/globalData";
 export default {
   name: 'user_page',
   components: {
@@ -34,6 +34,14 @@ export default {
         query: {
         }
       })
+    }
+    else
+    {
+      if(globalData.basePageInfo.getIntoUserPage === true)
+      {
+        this.$router.go(0)
+        globalData.basePageInfo.getIntoUserPage = false
+      }
     }
   },
   methods: {

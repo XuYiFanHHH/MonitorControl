@@ -33,6 +33,7 @@ export default {
             type: 'success',
             message: '登录成功'
           });
+          globalData.basePageInfo.getIntoUserPage = true
           this.$router.push({
             name: 'user_page',
             path:'/user_page',

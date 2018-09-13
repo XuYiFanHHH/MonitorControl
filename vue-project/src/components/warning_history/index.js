@@ -14,6 +14,7 @@ export default {
   },
   created() {
     this.refresh();
+    globalData.basePageInfo.getIntoUserPage = true
   },
   methods: {
     handleCurrentChange(val) {
