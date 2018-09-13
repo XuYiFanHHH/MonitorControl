@@ -9,7 +9,7 @@ import  numpy as np
 import  cv2 as cv
 from .opencv_utils import capture_pic, VideoCamera
 from PIL import Image
-from .models import UserInfo
+from .models import UserInfo, WarningHistory
 from .detector import yolo, isBegin, known_face_encodings, known_face_names
 import face_recognition
 import os
@@ -153,12 +153,18 @@ def recognizeFace(targetImg):
     end = timer()
     print("facerec time:", end - start)             
     print('person match', name)
+    # 检测结果中有已知的人
+    # if name != 'Unknown':
+    #     warningtype = 'found person of warning list'
+    #     warningcontent = name + "appeared"
+    #     warning = WarningHistory(warningtype = warningtype, warningcontent = warningcontent)
+    #     warning.save()
 
-def gen(camera):
-    global isBegin
+
+def gen(camera):  
     while True:
-        # print(isBegin)
         start = timer()
+        global isBegin
         if not isBegin:
             break
         image = camera.get_array_frame()
@@ -182,3 +188,68 @@ def gen(camera):
 
 def send_image(request):
     return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
+
+@require_http_methods(["POST"])
+def add_warning(request):
+    response = {}    
+    try:        
+        warningtype = 'found person of warning list'
+        warningcontent = "appeared"
+        warning = WarningHistory(warningtype = warningtype, warningcontent = warningcontent)
+        warning.save()
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except  Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    print(response)
+    return JsonResponse(response)
+
+@require_http_methods(["POST"])
+def delete_warning(request):
+    response = {}    
+    try:        
+        warningId = int(request.POST["id"])
+        warning = WarningHistory.objects.filter(id = warningId)
+        warning.delete()   
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except  Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    print(response)
+    return JsonResponse(response)
+
+@require_http_methods(["POST"])
+def get_onepage_warnings(request):
+    response = {}    
+    global isBegin
+    isBegin = False
+    try:
+        pageId = int(request.POST["page"])
+        
+        total_news_num = WarningHistory.objects.all().count()
+        # 一页显示二十条
+        pages = math.ceil(total_news_num / 20)
+        response['pages'] = pages
+
+        start_num = (pageId - 1) * 20
+        end_num = start_num + 20
+        if end_num > total_news_num:
+            end_num = total_news_num
+        List = list(WarningHistory.objects.all().values()[start_num:end_num])
+        resultList = []
+        for item in List:
+            resullItem = {  'id': item['id'], 
+                            'warningtype': item['warningtype'],
+                            'warningcontent': item['warningcontent'],
+                            'warningtime': item['addtime']}
+            resultList.append(resullItem)
+        response['list'] = resultList
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except  Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    
+    return JsonResponse(response)
