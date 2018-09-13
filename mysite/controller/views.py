@@ -15,6 +15,7 @@ import face_recognition
 import os
 from timeit import default_timer as timer
 import pickle
+import threading
 
 # Create your views here.
 
@@ -174,7 +175,10 @@ def gen(camera):
         # 若有人脸，截取出来进行检测
         if len(locations) > 0:
             for location in locations:
-                recognizeFace(image.crop(location))
+                # recognizeFace(image.crop(location))
+                t =threading.Thread(target=recognizeFace,args=(image.crop(location),))
+                # t.setDaemon(True)#设置线程为后台线程
+                t.start()
         # 生成器产生带框图片返回给前端
         im = im.resize((640,480))
         im = np.array(im)
