@@ -19,20 +19,6 @@ export default {
   },
   created() {
     this.long_polling()
-    // this.axios({
-    //   method: 'post',
-    //   url: '/controller/websocket',
-    //   responseType: 'stream',
-    //   data: {
-        
-    //   }
-    // })
-    // .then((res) => {
-    //   console.log(res.data)
-    // })
-    // .catch(err => {
-    //   console.log(err);
-    // });
     let location = window.document.cookie.indexOf('username')
     if(location == -1)
     {
@@ -47,37 +33,19 @@ export default {
         }
       })
     }
-    // this.initWebpack()
+    this.axios({
+      method: 'post',
+      url: '/controller/send_image/',
+      data: {
+      }
+    })
+    .then((res) => {
+    })
+    .catch(err => {
+    });
   },
   methods: {
-    // initWebpack() {
-    //   const wsurl = "ws://localhost:8000/controller/websocket"
-    //   this.websock = new WebSocket(wsurl)
-    //   this.websock.onopen = this.websocketOpen
-    //   this.websock.onmessage = this.websocketMessage
-    //   this.websock.onclose = this.websocketClose
-    //   this.websock.onerror = this.websocketError
-    // },
-
-    // websocketOpen() {
-    //   console.log("Websocket连接成功")
-    // },
-
-    // websocketMessage(res) {
-    //   console.log(res)
-    //   this.state = JSON.parse(res.data)
-    // },
-
-    // websocketClose() {
-    //   console.log("Websocket关闭")
-    // },
-
-    // websocketError() {
-    //   console.log("Websocket连接失败")
-    // },
-
     long_polling() {
-      console.log("hahaha")
       let self = this
       var getting = {
 
@@ -104,7 +72,6 @@ export default {
         },        
         //当请求时间过长（默认为60秒），就再次调用ajax长轮询
         error:function(res){
-        // $.ajax(getting);
         }
       }
       $.ajax(getting)

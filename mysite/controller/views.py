@@ -4,7 +4,7 @@ import math
 import time
 import  numpy as np
 import  cv2 as cv
-from .opencv_utils import capture_pic, VideoCamera
+from . import opencv_utils
 from PIL import Image
 from .models import UserInfo, WarningHistory
 from .detector import yolo, isBegin, known_face_encodings, known_face_names, terroristWarning, forbiddenAreaWarning, left, top ,right, bottom, terroristName, last_facerec_time
@@ -76,14 +76,8 @@ def register(request):
     return response
 
 
-def state_gen():
-    while True:
-        data = {"name": "Lee"}
-        yield data
-
-
 def long_polling(request):
-    global forbiddenAreaWarning, data, terroristWarning, terroristName
+    global forbiddenAreaWarning, terroristWarning, terroristName
     forbiddenAreaWarning = False
     terroristWarning = False
     terroristName = []
@@ -224,14 +218,13 @@ def isIntersect(x01, x02, y01, y02, x11, x12, y11, y12):
         return False
 
 
-def gen(camera):
+def gen():
     global isBegin, left, top, right, bottom, forbiddenAreaWarning, last_facerec_time
     while True:
         start = timer()
-        global isBegin, data
         if not isBegin:
             break
-        image = camera.get_array_frame()
+        image = opencv_utils.get_array_frame()
         image = Image.fromarray(image)
         # 物体检测
         im, labels, locations = yolo.detect_image(image)
@@ -245,7 +238,6 @@ def gen(camera):
                     warningcontent = 'person appeared in forbidden area'
                     warning = WarningHistory(warningtype=warningtype, warningcontent=warningcontent)
                     warning.save()
-                    data = 'person appeared in forbidden area'
                 print(labels)
                 print(locations)
                 # recognizeFace(image.crop(location))
@@ -269,7 +261,7 @@ def send_image(request):
     global isBegin, last_facerec_time
     isBegin = True
     last_facerec_time = timer()
-    return StreamingHttpResponse(gen(VideoCamera()), content_type='multipart/x-mixed-replace; boundary=frame')
+    return StreamingHttpResponse(gen(), content_type='multipart/x-mixed-replace; boundary=frame')
 
 @require_http_methods(["POST"])
 def add_warning(request):
