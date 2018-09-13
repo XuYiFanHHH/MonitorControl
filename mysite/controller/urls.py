@@ -8,4 +8,6 @@ urlpatterns = [
     path('register', views.register, name = "register"),
     path('changePwd', views.changePwd, name = "changePwd"),
     path('send_image/', views.send_image),
+    path('long_polling/', views.long_polling),
+    path('setRect/', views.setRect),
 ]

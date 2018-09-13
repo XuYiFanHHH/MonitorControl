@@ -3,6 +3,25 @@
     <el-row>
 			<el-button type="primary" @click="changePwdDialogVisible = true">修改密码</el-button>
 		</el-row>
+     <el-form :model="form">
+      <el-row>
+        <el-col :span="2">
+          <el-form-item label="左上点">
+            <el-input v-model="bPoint0" placeholder=""></el-input>
+            <el-input v-model="bPoint1" placeholder=""></el-input>
+          </el-form-item>
+      </el-col>   
+        <el-col :span="2" :offset="1">
+          <el-form-item label="右下点">       
+            <el-input v-model="ePoint0" placeholder=""></el-input>
+            <el-input v-model="ePoint1" placeholder=""></el-input>
+          </el-form-item>
+        <el-col :span="2">
+          <el-button type="primary" @click="sendRect">提交</el-button>
+        </el-col>
+      </el-col>   
+      </el-row>
+    </el-form>
     <el-row id="user_page" style="height: 100%">
       <img alt src='http://127.0.0.1:8000/controller/send_image/'>
 	  </el-row>
@@ -35,5 +54,7 @@
 		</el-dialog>
 	</el-row>
 </template>
+
+<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
 <style src="./index.less" lang="less"></style>
 <script src="./index.js"></script>

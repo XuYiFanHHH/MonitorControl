@@ -1,4 +1,4 @@
-from django.http import JsonResponse, StreamingHttpResponse
+from django.http import JsonResponse, StreamingHttpResponse,HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.core import serializers
 import requests
@@ -10,7 +10,7 @@ import  cv2 as cv
 from .opencv_utils import capture_pic, VideoCamera
 from PIL import Image
 from .models import UserInfo
-from .detector import yolo, isBegin
+from .detector import yolo, isBegin, isWarning, left, top ,right, bottom
 
 # Create your views here.
 
@@ -73,6 +73,36 @@ def register(request):
         response = JsonResponse(response)
     return response
 
+
+def state_gen():
+    while True:
+        data = {"name": "Lee"}
+        yield data
+
+
+def long_polling(request):
+    global isWarning
+    isWarning = False
+    data = {"isWaring": "True"}
+    while True:
+        if isWarning == True:
+            isWarning = False
+            return JsonResponse(data)
+        else:
+            time.sleep(1)
+
+
+@require_http_methods(["POST"])
+def setRect(request):
+    global left, top, right, bottom
+    left = request.POST['bPoint0']
+    top = request.POST['bPoint1']
+    right = request.POST['ePoint0']
+    bottom = request.POST['ePoint1']
+    print("(%s,%s)(%s,%s)"%(left,top,right,bottom))
+
+    return JsonResponse({"data":"success"})
+
 @require_http_methods(["POST"])
 def logout(request):    
     response = {}    
@@ -90,6 +120,7 @@ def logout(request):
         response['error_num'] = 1
         response = JsonResponse(response)
     return response
+
 
 @require_http_methods(["POST"])
 def changePwd(request):
@@ -124,8 +155,19 @@ def changePwd(request):
     return response
 
 
+def isIntersect(x01, x02, y01, y02, x11, x12, y11, y12):
+    zx = abs(x01 + x02 - x11 - x12);
+    x = abs(x01 - x02) + abs(x11 - x12);
+    zy = abs(y01 + y02 - y11 - y12);
+    y = abs(y01 - y02) + abs(y11 - y12);
+    if zx <= x and zy <= y:
+        return True
+    else:
+        return False
+
+
 def gen(camera):
-    global isBegin
+    global isBegin, left, top, right, bottom, isWarning
     while True:
         # print(isBegin)
         if not isBegin:
@@ -134,6 +176,9 @@ def gen(camera):
         image = Image.fromarray(image)
 
         im, labels, locations = yolo.detect_image(image)
+        # print(locations[0])
+        if locations == False:
+            isWarning = isIntersect(int(left), int(right), int(top), int(bottom), locations[0][0], locations[0][2], locations[0][1], locations[0][3])
         print(labels)
         print(locations)
         im = np.array(im)
